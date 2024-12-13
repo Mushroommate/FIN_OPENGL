@@ -44,7 +44,27 @@ def init_lighting():
     glLightfv(GL_LIGHT0, GL_AMBIENT, (0.3, 0.3, 0.3, 1))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
 
+def calculate_bezier_point(t, control_points):
+    n = len(control_points) - 1
+    point = [0, 0, 0]
+    for i in range(n + 1):
+        binomial = math.comb(n, i)
+        t_power = t ** i
+        one_minus_t_power = (1 - t) ** (n - i)
+        for j in range(3):
+            point[j] += binomial * one_minus_t_power * t_power * control_points[i][j]
+    return point
 
+def draw_bezier_curve(control_points):
+    glDisable(GL_LIGHTING)
+    glColor3f(0.5, 0.5, 0.5)  # Changed curve color to gray for better visibility on white
+    glBegin(GL_LINE_STRIP)
+    for i in range(101):
+        t = i / 100
+        point = calculate_bezier_point(t, control_points)
+        glVertex3fv(point)
+    glEnd()
+    glEnable(GL_LIGHTING)
 
 def draw_cube():
     glBegin(GL_QUADS)
